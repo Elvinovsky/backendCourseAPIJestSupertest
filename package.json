@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon ./dist/index.js",
+    "dev": "nodemon ./dist/src/index.js",
     "wath": "tsc -w"
   },
   "dependencies": {

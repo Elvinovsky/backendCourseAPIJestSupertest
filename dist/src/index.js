@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.app = void 0;
 const express_1 = __importDefault(require("express"));
-const app = (0, express_1.default)();
+exports.app = (0, express_1.default)();
 const port = 3000;
 const HTTP_STATUSES = {
     OK_200: 200,
@@ -14,17 +15,17 @@ const HTTP_STATUSES = {
     NOT_FOUND_404: 404
 };
 const jsonBodyMiddleware = express_1.default.json();
-app.use(jsonBodyMiddleware);
+exports.app.use(jsonBodyMiddleware);
 const db = {
     courses: [{ id: 1, title: 'front-end' },
         { id: 2, title: 'back-end' },
         { id: 3, title: 'automation qa' },
         { id: 4, title: 'devops' }]
 };
-app.get('/', (req, res) => {
+exports.app.get('/', (req, res) => {
     res.send({ message: 'IT-INCUBATOR.RU' });
 });
-app.get('/courses', (req, res) => {
+exports.app.get('/courses', (req, res) => {
     let foundCourses = db.courses;
     if (req.query.title) { // чтобы фильтрация при пустом title вернула весь массив кусов устанавливаем логическую функцию.
         foundCourses = foundCourses // выносим фильтрацию в отдельную переменную.
@@ -32,7 +33,7 @@ app.get('/courses', (req, res) => {
     } // при этом учитываем "частичное вхождение"
     res.json(foundCourses);
 });
-app.get('/courses/:id', (req, res) => {
+exports.app.get('/courses/:id', (req, res) => {
     const foundCourses = db.courses.find(c => c.id === +req.params.id);
     if (!foundCourses) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
@@ -42,7 +43,7 @@ app.get('/courses/:id', (req, res) => {
         res.json(foundCourses);
     }
 });
-app.post('/courses', (req, res) => {
+exports.app.post('/courses', (req, res) => {
     if (!req.body.title) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
         return;
@@ -56,7 +57,7 @@ app.post('/courses', (req, res) => {
         .status(HTTP_STATUSES.CREATED_201)
         .json(createCourses);
 });
-app.delete('/courses/:id', (req, res) => {
+exports.app.delete('/courses/:id', (req, res) => {
     const foundCourses = db.courses.find(c => c.id === +req.params.id);
     if (!foundCourses) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
@@ -65,7 +66,7 @@ app.delete('/courses/:id', (req, res) => {
     db.courses = db.courses.filter(c => c.id !== +req.params.id);
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
-app.put('/courses/:id', (req, res) => {
+exports.app.put('/courses/:id', (req, res) => {
     if (!req.body.title) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
         return;
@@ -77,9 +78,13 @@ app.put('/courses/:id', (req, res) => {
     }
     else {
         foundCourse.title = req.body.title;
-        res.sendStatus(204);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
     }
 });
-app.listen(port, () => {
+exports.app.delete('/__test__/data', (req, res) => {
+    db.courses = [];
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+});
+exports.app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
